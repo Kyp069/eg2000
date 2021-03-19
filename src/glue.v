@@ -4,7 +4,9 @@ module glue
 (
 	input  wire       clock,
 	input  wire       power,
-
+`ifdef ZX1
+	output wire       boot,
+`endif
 	output wire       hsync,
 	output wire       vsync,
 	output wire       pixel,
@@ -58,11 +60,11 @@ wire ioFF = !(!iorq && a[7:0] == 8'hFF);
 
 //-------------------------------------------------------------------------------------------------
 `ifdef ZX1
-wire reset = power & F12;
+wire reset = power & f12;
 `elsif SIDI
-wire reset = power & F11;
+wire reset = power & f11;
 `endif
-wire nmi = F5;
+wire nmi = f5;
 
 wire[ 7:0] d;
 wire[ 7:0] q;
@@ -167,13 +169,15 @@ keyboard Keyboard
 	.clock  (clock  ),
 	.ce     (pe8M8  ),
 	.ps2    (ps2    ),
-	.f12    (F12    ),
-	.f11    (F11    ),
-	.f5     (F5     ),
+	.f12    (f12    ),
+	.f11    (f11    ),
+	.f5     (f5     ),
 	.q      (keyQ   ),
 	.a      (keyA   )
 );
-
+`ifdef ZX1
+assign boot = f11;
+`endif
 //-------------------------------------------------------------------------------------------------
 
 reg mode, c, b;

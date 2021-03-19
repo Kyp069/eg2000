@@ -89,22 +89,22 @@ glue Glue
 
 reg[17:0] palette[15:0];
 initial begin
-	palette[15] = 18'b111000_111000_111000; // FF FF FF // 16 // white
-	palette[14] = 18'b100000_001000_111000; // 98 20 FF //  8 // magenta
-	palette[13] = 18'b001000_110000_100000; // 1F C4 8C // 14 // turquise
-	palette[12] = 18'b100000_100000_100000; // 8C 8C 8C // 13 // grey
-	palette[11] = 18'b100000_011000_111000; // 8A 67 FF // 12 // violet
-	palette[10] = 18'b110000_010000_111000; // C7 4E FF // 15 // pink
-	palette[ 9] = 18'b101000_110000_111000; // BC DF FF //  9 // light blue
-	palette[ 8] = 18'b001000_010000_111000; // 2F 53 FF //  8 // blue
-	palette[ 7] = 18'b110000_111000_001000; // EA FF 27 // 11 // yellow/green
-	palette[ 6] = 18'b111000_011000_001000; // EB 6F 2B //  5 // orange
-	palette[ 5] = 18'b101000_111000_010000; // AB FF 4A //  2 // green
-	palette[ 4] = 18'b111000_111000_001000; // FF F2 3D //  4 // yellow
-	palette[ 3] = 18'b111000_111000_111000; // EA EA EA //  1 // light grey
-	palette[ 2] = 18'b110000_001000_010000; // CB 26 5E //  3 // red
-	palette[ 1] = 18'b011000_111000_111000; // 7C FF EA //  7 // cyan
-	palette[ 0] = 18'b010000_010000_010000; // 5E 5E 5E // 10 // dark grey
+	palette[15] = 18'b111111_111111_111111; // FF FF FF // 16 // white
+	palette[14] = 18'b100110_001000_111111; // 98 20 FF //  8 // magenta
+	palette[13] = 18'b000111_110001_100011; // 1F C4 8C // 14 // turquise
+	palette[12] = 18'b100011_100011_100011; // 8C 8C 8C // 13 // grey
+	palette[11] = 18'b100010_011001_111111; // 8A 67 FF // 12 // violet
+	palette[10] = 18'b110001_010011_111111; // C7 4E FF // 15 // pink
+	palette[ 9] = 18'b101111_110111_111111; // BC DF FF //  9 // light blue
+	palette[ 8] = 18'b001011_010100_111111; // 2F 53 FF //  8 // blue
+	palette[ 7] = 18'b111010_111111_001001; // EA FF 27 // 11 // yellow/green
+	palette[ 6] = 18'b111010_011011_001010; // EB 6F 2B //  5 // orange
+	palette[ 5] = 18'b101010_111111_010010; // AB FF 4A //  2 // green
+	palette[ 4] = 18'b111111_111100_001111; // FF F2 3D //  4 // yellow
+	palette[ 3] = 18'b111010_111010_111010; // EA EA EA //  1 // light grey
+	palette[ 2] = 18'b110010_001001_010111; // CB 26 5E //  3 // red
+	palette[ 1] = 18'b011011_111111_111010; // 7C FF EA //  7 // cyan
+	palette[ 0] = 18'b010111_010111_010111; // 5E 5E 5E // 10 // dark grey
 end
 
 wire[17:0] rgbQ = pixel ? palette[color] : 1'd0;
@@ -119,7 +119,8 @@ assign led = tape;
 
 //-------------------------------------------------------------------------------------------------
 
-localparam CONF_STR = {
+localparam CONF_STR =
+{
 	"EG2000;;",
 	"T0,Reset;",
 	"V,v1.0"

@@ -79,13 +79,14 @@ end
 
 //-------------------------------------------------------------------------------------------------
 
-reg pressed = 1'b1;
-reg F12;
-reg F11;
 reg F5;
+reg F11;
+reg F12;
+reg pressed = 1'b1;
 
+reg alt;
+reg del;
 reg backspace;
-reg left;
 
 reg[7:0] key[7:0];
 
@@ -157,35 +158,44 @@ if(received)
 			8'h76: key[6][2] <= pressed; // BRK
 			8'h75: key[6][3] <= pressed; // Up
 			8'h72: key[6][4] <= pressed; // Down
-//			8'h6B: key[6][5] <= pressed; // Left
+			8'h6B: key[6][5] <= pressed; // Left
 			8'h74: key[6][6] <= pressed; // Right
 			8'h29: key[6][7] <= pressed; // SPACE
 
 			8'h12: key[7][0] <= pressed; // Shift
-//			8'h59: key[7][1] <= pressed; // ModSel
+			8'h1F: key[7][1] <= pressed; // ModSel (windows)
 			// ------------------------; // 
-//			8'h59: key[7][3] <= pressed; // rpt
+			8'h0D: key[7][3] <= pressed; // rpt (run/stop - tab)
 			8'h14: key[7][4] <= pressed; // ctrl
 			// ------------------------; // 
 			// ------------------------; // 
-//			8'h59: key[7][7] <= pressed; // lp
+			8'h58: key[7][7] <= pressed; // lp (lock - caps lock)
 
-			8'h07: F12 <= pressed;
-			8'h78: F11 <= pressed;
 			8'h03: F5  <= pressed;
+			8'h78: F11 <= pressed;
+			8'h07: F12 <= pressed;
 
+			8'h11: alt <= pressed;
+			8'h71: del <= pressed;
 			8'h66: backspace <= pressed;
-			8'h6B: left  <= pressed;
 		endcase
 	end
 
 //-------------------------------------------------------------------------------------------------
 
-assign f12 = ~F12;
-assign f11 = ~F11;
-assign f5  = ~F5;
+wire reset = key[7][4] & alt & del;
+wire boot = key[7][4] & alt & backspace;
 
-wire key_6__5_ = backspace|left;
+assign f5  = ~F5;
+`ifdef ZX1
+assign f11 = ~(F11 | boot);
+assign f12 = ~(F12 | reset);
+`elsif SIDI
+assign f11 = ~(F11 | reset);
+assign f12 = ~F12;
+`endif
+
+wire key_6__5_ = backspace|key[6][5];
 
 assign q =
 {
