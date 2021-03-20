@@ -48,7 +48,7 @@ module mist_video
 parameter OSD_COLOR    = 3'd4;
 parameter OSD_X_OFFSET = 10'd0;
 parameter OSD_Y_OFFSET = 10'd0;
-parameter SD_HCNT_WIDTH = 9;
+parameter SD_HCNT_WIDTH = 10;
 parameter COLOR_DEPTH = 6; // 1-6
 parameter OSD_AUTO_CE = 1'b1;
 parameter SYNC_AND = 1'b0; // 0 - XOR, 1 - AND

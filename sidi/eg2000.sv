@@ -47,14 +47,14 @@ module eg2000
 clock Clock
 (
 	.inclk0 (clock27),
-	.c0     (clock  ) // 35.468 MHz
+	.c0     (clock  )  // 35.468 MHz
 );
 
 //-------------------------------------------------------------------------------------------------
 
-reg[7:0] rs;
-wire power = rs[7] & ~status[0];
-always @(posedge clock) if(!power) rs <= rs+1'd1;
+reg[7:0] pw;
+wire power = pw[7] & ~status[0];
+always @(posedge clock) if(!power) pw <= pw+1'd1;
 
 //-------------------------------------------------------------------------------------------------
 
@@ -66,6 +66,7 @@ glue Glue
 (
 	.clock  (clock  ),
 	.power  (power  ),
+	.boot   (boot   ),
 	.hsync  (hsync  ),
 	.vsync  (vsync  ),
 	.pixel  (pixel  ),
@@ -119,10 +120,15 @@ assign led = tape;
 
 //-------------------------------------------------------------------------------------------------
 
+reg scandoubler_toggle;
+reg bootd;
+always @(posedge clock) begin bootd <= boot; if(!boot && bootd) scandoubler_toggle <= ~scandoubler_toggle; end
+
 localparam CONF_STR =
 {
 	"EG2000;;",
 	"T0,Reset;",
+	"O12,Scanlines,None,25%,50%,75%;",
 	"V,v1.0"
 };
 
@@ -131,15 +137,15 @@ wire[ 1:0] ps2;
 
 user_io #(.STRLEN(($size(CONF_STR)>>3))) userIo
 ( 
-	.conf_str    (CONF_STR),
-	.clk_sys     (clock   ),
-	.SPI_CLK     (spiCk   ),
-	.SPI_SS_IO   (cfgD0   ),
-	.SPI_MISO    (spiDo   ),
-	.SPI_MOSI    (spiDi   ),
-	.status      (status  ),
-	.ps2_kbd_clk (ps2[0]  ),
-	.ps2_kbd_data(ps2[1]  ),
+	.conf_str    (CONF_STR ),
+	.clk_sys     (clock    ),
+	.SPI_CLK     (spiCk    ),
+	.SPI_SS_IO   (cfgD0    ),
+	.SPI_MISO    (spiDo    ),
+	.SPI_MOSI    (spiDi    ),
+	.status      (status   ),
+	.ps2_kbd_clk (ps2[0]   ),
+	.ps2_kbd_data(ps2[1]   ),
 	.scandoubler_disable(scandoubler_disable)
 );
 
@@ -149,9 +155,9 @@ mist_video mistVideo
 	.SPI_SCK   (spiCk      ),
 	.SPI_DI    (spiDi      ),
 	.SPI_SS3   (spiS3      ),
-	.scanlines (2'b00      ),
+	.scanlines (status[2:1]),
 	.ce_divider(1'b0       ),
-	.scandoubler_disable(scandoubler_disable),
+	.scandoubler_disable(scandoubler_disable^scandoubler_toggle),
 	.no_csync  (1'b0       ),
 	.ypbpr     (1'b0       ),
 	.rotate    (2'b00      ),

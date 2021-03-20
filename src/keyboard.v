@@ -1,16 +1,23 @@
 //-------------------------------------------------------------------------------------------------
 module keyboard
 //-------------------------------------------------------------------------------------------------
+#
+(
+	parameter NMI   = 8'h03, // F5
+	parameter BOOT  = 8'h78, // F11
+	parameter RESET = 8'h07  // F12
+)
 (
 	input  wire      clock,
 	input  wire      ce,
 	input  wire[1:0] ps2,
-	output wire      f12,
-	output wire      f11,
-	output wire      f5,
+	output wire      nmi,
+	output wire      boot,
+	output wire      reset,
 	output wire[7:0] q,
 	input  wire[7:0] a
 );
+
 //-------------------------------------------------------------------------------------------------
 
 reg      ps2c;
@@ -79,14 +86,15 @@ end
 
 //-------------------------------------------------------------------------------------------------
 
-reg F5;
-reg F11;
-reg F12;
-reg pressed = 1'b1;
+reg keyNmi;
+reg keyBoot;
+reg keyReset;
 
 reg alt;
 reg del;
 reg backspace;
+
+reg pressed = 1'b1;
 
 reg[7:0] key[7:0];
 
@@ -171,31 +179,23 @@ if(received)
 			// ------------------------; // 
 			8'h58: key[7][7] <= pressed; // lp (lock - caps lock)
 
-			8'h03: F5  <= pressed;
-			8'h78: F11 <= pressed;
-			8'h07: F12 <= pressed;
+			NMI  : keyNmi    <= pressed;
+			BOOT : keyBoot   <= pressed;
+			RESET: keyReset  <= pressed;
 
-			8'h11: alt <= pressed;
-			8'h71: del <= pressed;
+			8'h11: alt       <= pressed;
+			8'h71: del       <= pressed;
 			8'h66: backspace <= pressed;
 		endcase
 	end
 
 //-------------------------------------------------------------------------------------------------
 
-wire reset = key[7][4] & alt & del;
-wire boot = key[7][4] & alt & backspace;
+assign nmi   = ~(keyNmi   );
+assign boot  = ~(keyBoot  | (key[7][4] & alt & backspace));
+assign reset = ~(keyReset | (key[7][4] & alt & del      ));
 
-assign f5  = ~F5;
-`ifdef ZX1
-assign f11 = ~(F11 | boot);
-assign f12 = ~(F12 | reset);
-`elsif SIDI
-assign f11 = ~(F11 | reset);
-assign f12 = ~F12;
-`endif
-
-wire key_6__5_ = backspace|key[6][5];
+wire key_6__5_ = key[6][5] | backspace;
 
 assign q =
 {
