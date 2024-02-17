@@ -76,3 +76,5 @@ _xmsgs/
 *output_files/
 
 *.bak
+
+.vs/
